@@ -1,0 +1,33 @@
+version: "3"
+services:
+  sentiment-analysis:
+    image: sentiment-analysis:local
+    environment:
+      PORT: 80
+      # NODE_ENV: production # to test production builds enable this.
+      MONGO_DB_URL: mongodb://sentiment-analysis-mongodb:27017/sentiment-analysis
+    ports:
+      - 8099:80
+    volumes:
+      - sentiment-analysis-node-modules-volume:/app/node_modules
+      - ./src:/app/src
+    deploy:
+      replicas: 1
+    depends_on:
+      - sentiment-analysis-mongodb
+
+  sentiment-analysis-mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_DATA_DIR: /data/db
+      MONGO_LOG_DIR: /dev/null
+    volumes:
+      - sentiment-analysis-mongodb-volume:/data/sentiment-analysis-mongodb/db
+    ports:
+      - 21017:27017
+    command:
+      - mongod
+
+volumes:
+  sentiment-analysis-node-modules-volume:
+  sentiment-analysis-mongodb-volume:
